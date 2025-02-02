@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Resume</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden; /* Prevent scrolling */
+            background: url('./assets/bg2.gif') no-repeat center center fixed; /* Set background image */
+            background-size: cover; /* Cover the entire page */
+        }
+        canvas {
+            display: block;
+            width: 100vw; /* Full viewport width */
+            height: 100vh; /* Full viewport height */
+            z-index: 0; /* Ensure the canvas is below other elements */
+        }
+        button {
+            font-size: 20px; /* Increase button size */
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            cursor: pointer;
+        }
+        #startButton {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #4CAF50; /* Green */
+            color: white;
+        }
+        #aboutButton, #exitButton {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        #aboutButton {
+            background-color: #008CBA; /* Blue */
+            color: white;
+            top: calc(50% + 60px); /* Position below start button */
+            z-index: 2; /* Ensure the about button is above the main image */
+        }
+        #exitButton {
+            background-color: #f44336; /* Red */
+            color: white;
+            top: calc(50% + 120px); /* Position below about button */
+        }
+        #exitButton.game-mode {
+            top: 10px;
+            right: 10px;
+            left: auto;
+            transform: none;
+        }
+        #interactiveImage {
+            position: absolute;
+            top: 30%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1; /* Ensure the image is on top */
+            width: 1500px; /* Adjust the width */
+            height: auto; /* Maintain aspect ratio */
+        }
+        #mainImage {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            z-index: 1; /* Ensure the image is on top */
+            width: 300px; /* Adjust the width as needed */
+            height: auto; /* Maintain aspect ratio */
+        }
+        #howToPlayButton {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background-color: #FFA500; /* Orange */
+            color: white;
+            z-index: 2; /* Ensure the button is above the main image */
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <img id="interactiveImage" src="./assets/interactive.png" alt="Interactive Image">
+    <img id="mainImage" src="./assets/main.png" alt="Main Image">
+    <button id="startButton">Start Game</button>
+    <button id="aboutButton">About</button>
+    <button id="howToPlayButton">How To Play</button>
+    <button id="exitButton">Exit</button>
+    <script src="game.js"></script>
+    <script>
+        document.getElementById('startButton').addEventListener('click', function() {
+            document.getElementById('startButton').style.display = 'none';
+            document.getElementById('aboutButton').style.display = 'none';
+            document.getElementById('howToPlayButton').style.display = 'none';
+            document.getElementById('exitButton').classList.add('game-mode');
+            document.getElementById('interactiveImage').style.display = 'none';
+            document.getElementById('mainImage').style.display = 'none'; // Hide the main image
+        });
+
+        document.getElementById('aboutButton').addEventListener('click', function() {
+            showingAbout = true;
+            document.getElementById('startButton').style.display = 'none';
+            document.getElementById('aboutButton').style.display = 'none';
+            document.getElementById('howToPlayButton').style.display = 'none';
+            document.getElementById('exitButton').style.display = 'none';
+            document.getElementById('interactiveImage').style.display = 'none'; // Hide the image
+            document.getElementById('mainImage').style.display = 'none'; // Hide the main image
+            clear();
+            ctx.drawImage(aboutImage, 0, 0, canvasWidth, canvasHeight);
+            // Create and display an exit button inside the about screen
+            const aboutExitButton = document.createElement('button');
+            aboutExitButton.id = 'aboutExitButton';
+            aboutExitButton.innerText = 'Exit';
+            aboutExitButton.style.position = 'absolute';
+            aboutExitButton.style.top = '10px';
+            aboutExitButton.style.right = '10px';
+            document.body.appendChild(aboutExitButton);
+            aboutExitButton.addEventListener('click', function() {
+                showingAbout = false;
+                document.getElementById('startButton').style.display = 'block';
+                document.getElementById('aboutButton').style.display = 'block';
+                document.getElementById('howToPlayButton').style.display = 'block';
+                document.getElementById('exitButton').style.display = 'block';
+                document.getElementById('interactiveImage').style.display = 'block'; // Show the image again
+                document.getElementById('mainImage').style.display = 'block'; // Show the main image again
+                document.body.removeChild(aboutExitButton);
+                clear();
+                drawBackground();
+            });
+        });
+
+        document.getElementById('howToPlayButton').addEventListener('click', function() {
+            showingHowToPlay = true;
+            document.getElementById('startButton').style.display = 'none';
+            document.getElementById('aboutButton').style.display = 'none';
+            document.getElementById('howToPlayButton').style.display = 'none';
+            document.getElementById('exitButton').style.display = 'none';
+            document.getElementById('interactiveImage').style.display = 'none'; // Hide the image
+            document.getElementById('mainImage').style.display = 'none'; // Hide the main image
+            clear();
+            ctx.drawImage(guideImage, 0, 0, canvasWidth, canvasHeight);
+            // Create and display an exit button inside the how to play screen
+            const howToPlayExitButton = document.createElement('button');
+            howToPlayExitButton.id = 'howToPlayExitButton';
+            howToPlayExitButton.innerText = 'Exit';
+            howToPlayExitButton.style.position = 'absolute';
+            howToPlayExitButton.style.top = '10px';
+            howToPlayExitButton.style.right = '10px';
+            document.body.appendChild(howToPlayExitButton);
+            howToPlayExitButton.addEventListener('click', function() {
+                showingHowToPlay = false;
+                document.getElementById('startButton').style.display = 'block';
+                document.getElementById('aboutButton').style.display = 'block';
+                document.getElementById('howToPlayButton').style.display = 'block';
+                document.getElementById('exitButton').style.display = 'block';
+                document.getElementById('interactiveImage').style.display = 'block'; // Show the image again
+                document.getElementById('mainImage').style.display = 'block'; // Show the main image again
+                document.body.removeChild(howToPlayExitButton);
+                clear();
+                drawBackground();
+            });
+        });
+    </script>
+</body>
+</html>
